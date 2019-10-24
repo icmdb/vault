@@ -7,8 +7,6 @@ ARG MIRROR=http://dl-cdn.alpinelinux.org
 ENV GOPROXY=${GOPROXY}
 RUN set -x \
     && sed -i 's#http://dl-cdn.alpinelinux.org#'${MIRROR}'#g' /etc/apk/repositories \
-#    && echo "192.30.253.112 github.com" >> /etc/hosts \
-#    && echo "151.101.185.194 github.global.ssl.fastly.net" >> /etc/hosts  \
     && apk update && apk add \
            ca-certificates \
            git \

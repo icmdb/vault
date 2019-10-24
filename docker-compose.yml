@@ -24,10 +24,8 @@ services:
       args:
         - GOARCH=amd64
         - GOOS=darwin
-        #- GOPROXY=https://goproxy.io
-        #- GOPROXY=https://goproxy.cn
-        - GOPROXY=https://mirrors.aliyun.com/goproxy/
-        - MIRROR=https://mirrors.aliyun.com
+        - GOPROXY=
+        - MIRROR=
     container_name: vault
     hostname: vault
     image: icmdb/vault-darwin
