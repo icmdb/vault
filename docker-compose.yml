@@ -1,0 +1,54 @@
+version: "3"
+services:
+  vault-linux:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      args:
+        - GOARCH=amd64
+        - GOOS=linux
+        - GOPROXY=
+        - MIRROR=
+    container_name: vault
+    hostname: vault
+    image: icmdb/vault
+    volumes:
+      - ./vault-linux/:/vault-linux/:rw
+    command: sh -c "ls /go/bin/ && \cp /go/bin/* /vault-linux/"
+    restart: always
+
+  vault-darwin:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      args:
+        - GOARCH=amd64
+        - GOOS=darwin
+        #- GOPROXY=https://goproxy.io
+        #- GOPROXY=https://goproxy.cn
+        - GOPROXY=https://mirrors.aliyun.com/goproxy/
+        - MIRROR=https://mirrors.aliyun.com
+    container_name: vault
+    hostname: vault
+    image: icmdb/vault-darwin
+    volumes:
+      - ./vault-darwin/:/vault-darwin/:rw
+    command: sh -c "ls /go/bin/ && \cp /go/bin/* /vault-darwin/"
+    restart: always
+
+  vault-windows:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      args:
+        - GOARCH=amd64
+        - GOOS=windows
+        - GOPROXY=
+        - MIRROR=
+    container_name: vault
+    hostname: vault
+    image: icmdb/vault-windows
+    volumes:
+      - ./vault-windows/:/vault-windows/:rw
+    command: sh -c "ls /go/bin/ && \cp /go/bin/* /vault-windows/"
+    restart: always
