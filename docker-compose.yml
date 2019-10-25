@@ -1,20 +1,27 @@
 version: "3"
 services:
-  vault-linux:
+  builder: 
     build:
       context: ./
       dockerfile: ./Dockerfile
-      args:
-        - GOARCH=amd64
-        - GOOS=linux
-        - GOPROXY=
-        - MIRROR=
-    container_name: vault
-    hostname: vault
     image: icmdb/vault
-    volumes:
-      - ./vault-linux/:/vault-linux/:rw
-    command: sh -c "ls /go/bin/ && \cp /go/bin/* /vault-linux/"
+
+  vault-server:
+    image: icmdb/vault
+    environment:
+     - XXX=
+    ports:
+      - 8200:8200
+      - 8201:8201
+    command: ["/go/bin/vault", "server", "-dev", "-dev-listen-address=0.0.0.0:8200"]
+    restart: always
+
+  vault-agent:
+    image: icmdb/vault
+    environment:
+      - VAULT_AGENT_ADDR=0.0.0.0:8200
+      - VAULT_LOG_LEVEL=debug
+    command: ["/go/bin/vault", "agent", "-config=agent.hcl"]
     restart: always
 
   vault-darwin:
@@ -22,31 +29,10 @@ services:
       context: ./
       dockerfile: ./Dockerfile
       args:
-        - GOARCH=amd64
         - GOOS=darwin
-        - GOPROXY=
-        - MIRROR=
-    container_name: vault
-    hostname: vault
-    image: icmdb/vault-darwin
+        - VAULT_VERSION=1.2.3
+    image: icmdb/vault:1.2.3-darwin
     volumes:
       - ./vault-darwin/:/vault-darwin/:rw
     command: sh -c "ls /go/bin/ && \cp /go/bin/* /vault-darwin/"
-    restart: always
-
-  vault-windows:
-    build:
-      context: ./
-      dockerfile: ./Dockerfile
-      args:
-        - GOARCH=amd64
-        - GOOS=windows
-        - GOPROXY=
-        - MIRROR=
-    container_name: vault
-    hostname: vault
-    image: icmdb/vault-windows
-    volumes:
-      - ./vault-windows/:/vault-windows/:rw
-    command: sh -c "ls /go/bin/ && \cp /go/bin/* /vault-windows/"
     restart: always

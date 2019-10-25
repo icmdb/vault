@@ -1,31 +1,19 @@
-FROM golang:1.13.3-alpine3.10 as builder
-ARG VAULT_VERSION=1.2.2
+FROM alpine:3.10.3 as builder
 ARG GOOS=linux
 ARG GOARCH=amd64
-ARG GOPROXY=
-ARG MIRROR=http://dl-cdn.alpinelinux.org
-ENV GOPROXY=${GOPROXY}
-RUN set -x \
-    && sed -i 's#http://dl-cdn.alpinelinux.org#'${MIRROR}'#g' /etc/apk/repositories \
-    && apk update && apk add \
-           ca-certificates \
-           git \
-    && mkdir -pv ${GOPATH}/src/github.com/hashicorp/ \
-    && go get -v github.com/hashicorp/vault \
-    && cd ${GOPATH}/src/github.com/hashicorp/vault 
-WORKDIR ${GOPATH}/src/github.com/hashicorp/vault
-RUN set -x \
-    && git checkout v${VAULT_VERSION} \
-    && go tool dist list \
-    && echo "${GOOS}/${GOARCH}" > ${GOPATH}/bin/platform \
-#    && go env -w GOPRIVATE=*.github.com *.golang.org *.google.com \
-    && GOOS=${GOOS} GOARCH=${GOARCH} go build -v -o ${GOPATH}/bin/vault
+ARG VAULT_VERSION=1.2.3
+RUN    set -x \
+    && wget -c -P /tmp/ https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_${GOOS}_${GOARCH}.zip \
+    && mkdir -p /go/bin/ \
+    && unzip -d /go/bin/  /tmp/vault_${VAULT_VERSION}_${GOOS}_${GOARCH}.zip \
+    && chmod +x /go/bin/*
 
 
-FROM golang:1.13.3-alpine3.10
-LABEL matianer="ihanyouqing@gmail.com"
+FROM alpine:3.10.3
+LABEL maintainer="ihanyouqing@gmail.com"
 ENV GOBIN=${GOPATH}/bin
-ENV VAULT_VERSION=1.2.2
-COPY --from=builder ${GOPATH}/bin/platform ${GOPATH}/bin/platform
-COPY --from=builder ${GOPATH}/bin/vault    ${GOPATH}/bin/vault
-#CMD ["/go/bin/valut"]
+ENV VAULT_VERSION=${VAULT_VERSION}
+COPY --from=builder /go/bin/ /go/bin/
+WORKDIR /go/bin/
+EXPOSE 8200 8201
+CMD ["/go/bin/vault", "server", "-dev", "-dev-listen-address=0.0.0.0:8200"]
