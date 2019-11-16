@@ -1,11 +1,12 @@
 FROM alpine:3.10.3 as builder
 ARG GOOS=linux
 ARG GOARCH=amd64
-ARG VAULT_VERSION=1.2.3
+ARG VAULT_VERSION=1.3.0
+ADD . /tmp/vault
 RUN    set -x \
-    && wget -c -P /tmp/ https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_${GOOS}_${GOARCH}.zip \
+    && test -s /tmp/vault/vault_1.3.0_${GOOS}_amd64.zip || wget -c -P /tmp/vault/ https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_${GOOS}_${GOARCH}.zip \
     && mkdir -p /go/bin/ \
-    && unzip -d /go/bin/  /tmp/vault_${VAULT_VERSION}_${GOOS}_${GOARCH}.zip \
+    && unzip -d /go/bin/  /tmp/vault/vault_${VAULT_VERSION}_${GOOS}_${GOARCH}.zip \
     && chmod +x /go/bin/*
 
 

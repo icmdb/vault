@@ -1,5 +1,5 @@
 FROM golang:1.13.3-alpine3.10 as builder
-ARG VAULT_VERSION=1.2.3
+ARG VAULT_VERSION=1.3.0
 ARG GOOS=linux
 ARG GOARCH=amd64
 ARG GOPROXY=
@@ -15,7 +15,7 @@ RUN set -x \
     && mkdir -pv ${GOPATH}/src/github.com/hashicorp/ \
     && echo "nameserver 8.8.8.8" >> /etc/resolv.conf \
     && echo "13.229.188.59 github.com" >> /etc/hosts \
-    && echo "185.199.111.153 assets-cdn.github.com" >> /etc/hosts \
+    && echo "185.199.111.1.3.0 assets-cdn.github.com" >> /etc/hosts \
     && echo "199.59.148.14 github.global.ssl.fastly.net" >> /etc/hosts \
 #    && go env -w GOPRIVATE=${GOPRIVATE:=*.icmdb.vip} \
     && go env -w GOPROXY=${GOPROXY} \
