@@ -34,3 +34,4 @@ clean:
 	rm -rf ./vault-linux/
 	rm -rf ./vault-darwin/
 	rm -rf ./vault-windows/
+	docker-compose down

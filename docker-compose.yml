@@ -6,14 +6,14 @@ services:
       dockerfile: ./Dockerfile
     image: icmdb/vault
 
-  build-darwin:
+  vault-darwin:
     build:
       context: ./
       dockerfile: ./Dockerfile
       args:
         - GOOS=darwin
         - VAULT_VERSION=1.3.0
-    image: icmdb/vault:1.3.0-darwin
+    image: icmdb/vault:darwin-1.3.0
     volumes:
       - ./vault-darwin/:/vault-darwin/:rw
     command: sh -c "ls /go/bin/ && \cp /go/bin/* /vault-darwin/"
