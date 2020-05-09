@@ -1,28 +1,30 @@
 version: "3"
 services:
-  builder: 
+  linux: 
     build:
       context: ./
       dockerfile: ./Dockerfile
     image: icmdb/vault
 
-  vault-darwin:
+  macos:
     build:
       context: ./
       dockerfile: ./Dockerfile
       args:
         - GOOS=darwin
-        - VAULT_VERSION=1.3.0
-    image: icmdb/vault:darwin-1.3.0
+        - GOARCH=amd64
+        - VAULT_VERSION=1.4.1
+        - ALPINE_VERSION=3.11
+    image: icmdb/vault:darwin-1.4.1
     volumes:
       - ./vault-darwin/:/vault-darwin/:rw
-    command: sh -c "ls /go/bin/ && \cp /go/bin/* /vault-darwin/"
+    command: sh -xc "ls -al /go/bin/ && cp -prfv /go/bin/* /vault-darwin/ && echo Run ./vault-darwin/vault -version"
     restart: always
 
   vault-server:
     image: icmdb/vault
     environment:
-     - XXX=
+      - VAULT_ADDR=http://127.0.0.1:8200
     ports:
       - 8200:8200
       - 8201:8201
@@ -32,7 +34,9 @@ services:
   vault-agent:
     image: icmdb/vault
     environment:
-      - VAULT_AGENT_ADDR=0.0.0.0:8200
+      - VAULT_AGENT_ADDR=http://vault-server:8200
       - VAULT_LOG_LEVEL=debug
+    ports:
+      - 8200:8200
     command: ["/go/bin/vault", "agent", "-config=agent.hcl"]
     restart: always

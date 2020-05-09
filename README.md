@@ -4,16 +4,36 @@
 
 ```
 # Clone Repo
-git clone https://github.com/icmdb/vault.git
+mkdir -p vault && vault
+cat > docker-compose.yml <<EOT
+version: "3"
+services:
+  vault-server:
+    image: icmdb/vault
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+    ports:
+      - 8200:8200
+      - 8201:8201
+    command: ["/go/bin/vault", "server", "-dev", "-dev-listen-address=0.0.0.0:8200"]
+    restart: always
 
-# Enter Directory
-cd vault
+  vault-agent:
+    image: icmdb/vault
+    environment:
+      - VAULT_AGENT_ADDR=http://vault-server:8200
+      - VAULT_LOG_LEVEL=debug
+    ports:
+      - 8200:8200
+    command: ["/go/bin/vault", "agent", "-config=agent.hcl"]
+    restart: always
+EOT
 
 # Pull images
 docker-compose pull
 
 # Start
-docker-compose up -d vault-server vault-agent
+docker-compose up -d 
 
 # Remove (Carefully)
 docker-compose down
