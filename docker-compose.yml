@@ -13,9 +13,9 @@ services:
       args:
         - GOOS=darwin
         - GOARCH=amd64
-        - VAULT_VERSION=1.4.1
+        - VAULT_VERSION=1.5.3
         - ALPINE_VERSION=3.11
-    image: icmdb/vault:darwin-1.4.1
+    image: icmdb/vault:darwin-1.5.3
     volumes:
       - ./vault-darwin/:/vault-darwin/:rw
     command: sh -xc "ls -al /go/bin/ && cp -prfv /go/bin/* /vault-darwin/ && echo Run ./vault-darwin/vault -version"
